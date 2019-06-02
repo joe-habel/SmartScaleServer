@@ -311,11 +311,19 @@ class ServerInterface:
         self.blinker = Blinker(self.board)
     
     def discoverBoard(self):
-        address = self.board.discover()
-        self.tracker.setAddress(address)
-        
+        try:
+            address = self.board.discover()
+            self.tracker.setAddress(address)
+        except:
+            pass
+        else:
+            self.disconnectCurrentDevices()
+            self.connect()
+    
     def connectToKnownAddress(self, address):
         self.tracker.setAddress(address)
+        self.disconnectCurrentDevices()
+        self.connect()
         
     def disconnectCurrentDevices(self):
         try:
