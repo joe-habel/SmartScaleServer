@@ -5,6 +5,7 @@ import sys
 import subprocess
 
 # --------- User Settings ---------
+#TODO: Let's figure out a good sample rate
 WEIGHT_SAMPLES = 50
 # ---------------------------------
 
@@ -346,6 +347,9 @@ class ServerInterface:
         else:
             self.tracker.setConnection(True)
             self.blinker.blink(1)
+            #TODO: This can't go here, or maybe it can, but as the return value?
+            #Actually this is probably gonna need it's own thread spawned up?
+            #Let's check later is flask handles that shit for us or not
             self.recieveFromBoard()
             
     def recieveFromBoard(self):

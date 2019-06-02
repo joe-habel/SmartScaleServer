@@ -1,0 +1,6 @@
+1) Find a means of fixing how the current wiiboard script deals with what the weight measurements are
+2) Learn React for frontend management of data calls
+3) Find a good Flask data push approach for live-streaming data back to the webapp
+    a) A comet is the old school way
+    b) This is what WebSockets might do though
+4) Make sure the WiiBoard can stay powered and connected indefinetely
