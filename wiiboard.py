@@ -49,11 +49,12 @@ class WeightSensorTracker:
 
 
 class EventProcessor:
-    def __init__(self):
+    def __init__(self, tracker):
         self._measured = False
         self.done = False
         self._measureCnt = 0
         self._events = range(WEIGHT_SAMPLES)
+        self.tracker = tracker
 
     def mass(self, event):
         if (event.totalWeight > 2):
@@ -66,6 +67,7 @@ class EventProcessor:
                 self._weight = self._sum/WEIGHT_SAMPLES
                 self._measureCnt = 0
                 print str(self._weight) + " lbs"
+                self.tracker.updateLastWeight(str(self._weight) + " lbs")
             if not self._measured:
                 self._measured = True
 
@@ -306,7 +308,7 @@ class Blinker:
 class ServerInterface:
     def __init__(self):
         self.tracker = WeightSensorTracker()
-        self.processor = EventProcessor()
+        self.processor = EventProcessor(self.tracker)
         self.board = Wiiboard(self.processor)
         self.blinker = Blinker(self.board)
     
