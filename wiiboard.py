@@ -270,6 +270,9 @@ def main():
     if len(sys.argv) == 1:
         print "Discovering board..."
         address = board.discover()
+        if address is not None:
+            with open('.wii-board-addr', 'w') as f:
+                f.write(str(address))
     else:
         address = sys.argv[1]
 
