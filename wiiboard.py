@@ -284,7 +284,7 @@ def main():
     except:
         pass
 
-    print "Trying to connect..."
+    print "Trying to connect to address %s"%address
     board.connect(address)  # The wii board must be in sync mode at this time
     board.wait(200)
     # Flash the LED so we know we can step on.
