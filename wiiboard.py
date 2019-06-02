@@ -270,6 +270,7 @@ def main():
     if len(sys.argv) == 1:
         print "Discovering board..."
         address = board.discover()
+        print "Adress is ", address
     else:
         address = sys.argv[1]
 
