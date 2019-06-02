@@ -20,6 +20,7 @@ def show_input():
         address = f.read()
     
     board.connectToKnownAddress(address)
+    print "what happen here????"
     
     return "We're going to try to connect to the board. Make sure you click the red button on the back. If it connects, move to /weight route"
 
