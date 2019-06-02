@@ -1,13 +1,31 @@
+import os
+
 from flask import Flask
+from wiiboard import ServerInterface
+ 
+
 app = Flask(__name__)
+board = ServerInterface()
 
-@app.route('/hi')
+@app.route('/')
 def hello_world():
-    return "Hi From the Pi!"
+    return "Smart Scale Landing"
 
-@app.route('/input/<val>')
+@app.route('/connect-board')
 def show_input(val):
-    return "The route was input/%s"%val
+    if not os.path.exists('.wii-board-addr'):
+        return "No preconfigured board here"
+    
+    with open('.wii-board-addr', 'r') as f:
+        address = f.read()
+    
+    board.connectToKnownAddress(address)
+    
+    return "We're going to try to connect to the board. Make sure you click the red button on the back. If it connects, move to /weight route"
+
+@app.route('/weight')
+def displayWeight():
+    return "Last Weight: %s"%board.getWeight()
 
 
 if __name__ == "__main__":

@@ -25,6 +25,29 @@ TOP_LEFT = 2
 BOTTOM_LEFT = 3
 BLUETOOTH_NAME = "Nintendo RVL-WBC-01"
 
+
+class WeightSensorTracker:
+    def __init__(self):
+        self.lastMeasurement = None
+        self.connectionState = False
+        self.wiiBoardAddress = None
+    
+    def setConnection(self, state):
+        self.connectionState = state
+    
+    def setAddress(self, address):
+        self.wiiBoardAddress = address
+        if address is not None:
+            with open('.wii-board-addr', 'w') as f:
+                f.write(str(address))
+    
+    def updateLastWeight(self, weight):
+        self.lastMeasurement = weight
+    
+    
+        
+
+
 class EventProcessor:
     def __init__(self):
         self._measured = False
@@ -262,6 +285,64 @@ class Wiiboard:
     def wait(self, millis):
         time.sleep(millis / 1000.0)
 
+class Blinker:
+    def __init__(self, board):
+        self.board = board
+    
+    def blink(self, n=1):
+        for i in range(n):
+            self.board.wait(200)
+            self.board.setLight(False)
+            self.board.wait(500)
+            self.board.setLight(True)
+        
+    def failedConnection(self):
+        for i in range(5):
+            self.board.setLight(False)
+            self.board.wait(100)
+            self.board.setLight(True)
+            self.board.wait(100)
+
+class ServerInterface:
+    def __init__(self):
+        self.tracker = WeightSensorTracker()
+        self.processor = EventProcessor()
+        self.board = Wiiboard(self.processor)
+        self.blinker = Blinker(self.board)
+    
+    def discoverBoard(self):
+        address = self.board.discover()
+        self.tracker.setAddress(address)
+        
+    def connectToKnownAddress(self, address):
+        self.tracker.setAddress(address)
+        
+    def disconnectCurrentDevices(self):
+        try:
+            # Disconnect already-connected devices.
+            # This is basically Linux black magic just to get the thing to work.
+            subprocess.check_output(["bluez-test-input", "disconnect", self.tracker.wiiBoardAddress], stderr=subprocess.STDOUT)
+            subprocess.check_output(["bluez-test-input", "disconnect", self.tracker.wiiBoardAddress], stderr=subprocess.STDOUT)
+        except:
+            pass
+    
+    def connect(self):
+        try:
+            self.board.connect(self.tracker.wiiBoardAddress)
+            
+        except:
+            self.tracker.setConnection(False)
+            self.blinker.failedConnection()
+        else:
+            self.tracker.setConnection(True)
+            self.blinker.blink(1)
+            self.recieveFromBoard()
+            
+    def recieveFromBoard(self):
+        self.board.receive()
+    
+    def getWeight(self):
+        return self.tracker.lastMeasurement
 
 def main():
     processor = EventProcessor()
@@ -292,6 +373,7 @@ def main():
     board.wait(500)
     board.setLight(True)
     board.receive()
+
 
 if __name__ == "__main__":
     main()
