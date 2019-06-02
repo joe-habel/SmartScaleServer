@@ -12,7 +12,7 @@ def hello_world():
     return "Smart Scale Landing"
 
 @app.route('/connect-board')
-def show_input(val):
+def show_input():
     if not os.path.exists('.wii-board-addr'):
         return "No preconfigured board here"
     
