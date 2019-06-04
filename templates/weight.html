@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="UTF-8">
+        <title> Wii Weight </title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+
+    <script>
+        $(document).ready(function(){
+        var socket = io.connect('http://localhost:5000');
+        });
+
+        socket.on('sigWebSocketInit', function(msg){
+        document.getElementById("web-socket-connection").innerHTML = msg.connection;
+        });
+
+        socket.on('sigUpdateWeight', function(msg){
+        document.getElementById("current-weight").innerHTML = msg.weight;
+        });
+</head>
+<body>
+    <div class="container text-center">
+    <h1> WebSocket Connection </h1>
+    <h3 id="web-socket-connection"> False </h3>
+    <h1> Current Weight </h1>
+    <h3 id="current-weight"> 0.00 lbs </h3>
+    </div>
+</body>
+</head>
+
+

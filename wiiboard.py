@@ -4,6 +4,8 @@ import bluetooth
 import sys
 import subprocess
 
+from threading import Thread
+
 # --------- User Settings ---------
 #TODO: Let's figure out a good sample rate
 WEIGHT_SAMPLES = 50
@@ -32,6 +34,10 @@ class WeightSensorTracker:
         self.lastMeasurement = None
         self.connectionState = False
         self.wiiBoardAddress = None
+        self.weightCallback = None
+    
+    def setCallback(self, callback):
+        self.weightCallback = callback
     
     def setConnection(self, state):
         self.connectionState = state
@@ -44,6 +50,8 @@ class WeightSensorTracker:
     
     def updateLastWeight(self, weight):
         self.lastMeasurement = weight
+        if self.weightCallback is not None:
+            self.weightCallback(weight)
     
     
         
@@ -344,19 +352,33 @@ class ServerInterface:
         except:
             self.tracker.setConnection(False)
             self.blinker.failedConnection()
+            return False
         else:
             self.tracker.setConnection(True)
             self.blinker.blink(1)
             #TODO: This can't go here, or maybe it can, but as the return value?
             #Actually this is probably gonna need it's own thread spawned up?
             #Let's check later is flask handles that shit for us or not
-            self.recieveFromBoard()
-            
-    def recieveFromBoard(self):
-        self.board.receive()
+            return True
+        
     
     def getWeight(self):
         return self.tracker.lastMeasurement
+    
+    def getTracker(self):
+        return self.tracker
+    
+
+class WiiBoardThread(Thread):
+    def __init__(self, interface):
+        self.board = interface.board
+        self.tracker = interface.tracker
+    
+    def setWebSocketFunc(self, func):
+        self.tracker.setCallback(func)
+    
+    def run(self):
+        self.board.receive()
 
 def main():
     processor = EventProcessor()
