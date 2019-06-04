@@ -369,16 +369,18 @@ class ServerInterface:
         return self.tracker
     
 
-class WiiBoardThread(Thread):
+class WiiBoardThread:
     def __init__(self, interface):
         self.board = interface.board
         self.tracker = interface.tracker
     
-    def setWebSocketFunc(self, func):
+    def setCallback(self, func):
         self.tracker.setCallback(func)
     
-    def run(self):
-        self.board.receive()
+    def start(self):
+        worker = lambda : self.board.receive
+        t = Thread(target=worker)
+        t.start()
 
 def main():
     processor = EventProcessor()

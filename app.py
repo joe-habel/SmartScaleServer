@@ -1,7 +1,7 @@
 import os
 
 from flask import Flask, render_template
-from flask_socketio import SocketIO, send, emit
+from flask_socketio import SocketIO, emit
 from wiiboard import ServerInterface, WiiBoardThread
  
 
@@ -14,13 +14,13 @@ class WiiBoardBluetoothSync:
         self.connection = None
     
     def setThread(self, board):
-        self.connection = WiiBoardThread()
+        self.connection = WiiBoardThread(board)
     
     def setCallback(self, func):
         self.connection.setCallback(func)
         
-    def run(self):
-        self.connection.run()
+    def start(self):
+        self.connection.start()
     
 BluetoothConnection = WiiBoardBluetoothSync()    
 
@@ -31,25 +31,23 @@ def hello_world():
 @app.route('/connect-board')
 def show_input():
     if not os.path.exists('.wii-board-addr'):
-        return "No preconfigured board here"
+        board.discoverBoard()
+    else:
+        with open('.wii-board-addr', 'r') as f:
+            address = f.read()
     
-    with open('.wii-board-addr', 'r') as f:
-        address = f.read()
+    board.connectToKnownAddress(address)
     
-    connection = board.connectToKnownAddress(address)
-    
-    if not connection:
-        return "Board didn't connect"
     
     BluetoothConnection.setThread(board)
-    BluetoothConnection.run()
+    BluetoothConnection.start()
         
     
     return "We're going to try to connect to the board. Make sure you click the red button on the back."
 
 @app.route('/weight')
 def displayWeight():
-    render_template('weight.html')
+    return render_template('weight.html')
 
 @socketio.on('connect')
 def initWeightUpdate():
@@ -61,4 +59,4 @@ def initWeightUpdate():
 
 
 if __name__ == "__main__":
-    socketio.run(app, host='0.0.0.0')
+    socketio.run(app, host='0.0.0.0', debug=True)
