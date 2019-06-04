@@ -6,6 +6,7 @@ from wiiboard import ServerInterface, WiiBoardThread
  
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 board = ServerInterface()
 
@@ -61,4 +62,5 @@ def initWeightUpdate():
 
 
 if __name__ == "__main__":
+    print "Are we even doing this?"
     socketio.run(app, host='0.0.0.0')
