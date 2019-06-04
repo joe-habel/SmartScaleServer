@@ -8,8 +8,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
 
     <script>
-        $(document).ready(function(){
-        var socket = io.connect('http://localhost:5000');
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        
+        socket.on('connect', function() {
+        console.log("WebSocket Connected!");
         });
 
         socket.on('sigWebSocketInit', function(msg){
@@ -18,7 +21,9 @@
 
         socket.on('sigUpdateWeight', function(msg){
         document.getElementById("current-weight").innerHTML = msg.weight;
+        console.log(msg.weight);
         });
+</script>
 </head>
 <body>
     <div class="container text-center">
@@ -28,6 +33,5 @@
     <h3 id="current-weight"> 0.00 lbs </h3>
     </div>
 </body>
-</head>
-
+</html>
 

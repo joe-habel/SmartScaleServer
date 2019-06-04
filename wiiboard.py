@@ -51,6 +51,8 @@ class WeightSensorTracker:
     def updateLastWeight(self, weight):
         self.lastMeasurement = weight
         if self.weightCallback is not None:
+            with open('weight-log.,txt', 'a') as wl:
+                wl.write(weight + '\n')
             self.weightCallback(weight)
     
     
@@ -334,7 +336,7 @@ class ServerInterface:
     def connectToKnownAddress(self, address):
         self.tracker.setAddress(address)
         self.disconnectCurrentDevices()
-        self.connect()
+        return self.connect()
         
     def disconnectCurrentDevices(self):
         try:
@@ -369,16 +371,18 @@ class ServerInterface:
         return self.tracker
     
 
-class WiiBoardThread(Thread):
+class WiiBoardThread:
     def __init__(self, interface):
         self.board = interface.board
         self.tracker = interface.tracker
     
-    def setWebSocketFunc(self, func):
+    def setCallback(self, func):
         self.tracker.setCallback(func)
     
-    def run(self):
-        self.board.receive()
+    def start(self):
+        t = Thread(target=self.board.receive)
+        print "Definetely started a thread"
+        t.start()
 
 def main():
     processor = EventProcessor()
