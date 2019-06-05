@@ -380,6 +380,7 @@ class WiiBoardThread:
     def start(self):
         if self.t is None:
             self.t = Thread(target=self.board.receive)
+            self.t.setDaemon(True)
             print "Definetely started a thread"
             self.t.start()
 
