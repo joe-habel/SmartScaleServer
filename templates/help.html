@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<!--
+We're putting the nice html/JS thoughts we can think of here, so hopefully this work doesn't go lost.
+
+1) In JS, this is self.
+2) constructor looks like the __init__ call
+3) We're always going to need a render call, we can think of it as a graphical return for the GUI
+4) state is a dict like we're used to with pickling, the issues is we always care about it, not just on saves and loads.
+5) bind looks like the Qt eqivalent of connect, but I might be mis-interpreting that one, it easily could be an init method, or super call 
+6) We have to make super calls on constructor (__init__) since we're subclassing the React DOM
+
+-->
+
+<html>
+  <head>
+      <!-- We have to import the react and react dom scripts, as well as babel for transpiling react JSX into native JS -->
+      <script src="https://unpkg.com/react@15/dist/react.min.js"></script>
+      <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+      <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+  </head>
+      <body>
+        <!-- Our app is defined in JS, and needs babel to transpile it.-->
+        <div id="root"></div>
+        <script type="text/babel">
+        {/* 
+       
+        Our classes here interact as the OO GUI level elements that we're acting with via Qt GUIs.
+        The difference here is that in QT GUI elements, we interact in well defined methods, we have to 
+        define interaction methods for React classes soley with props and state. 
+
+        From what I initallially understand,
+
+        fundementally, props can't be touched by the object, but state can.
+
+        props act as args that we pass onto the class and have no effect on the functionality of the class.
+        props act soley as well defined data for the class to interact with.
+        can't "self" call props, i.e. not attrs
+
+        The hello world example I looked at had the props example referenced directly via the render return.
+
+        State is more what I'm acustomed to.
+        State allows us to interact directly with the class, and the class to directly interact and change it.
+        State is more like the attrs or self elements of the class.
+
+        */}
+        class Hello extends React.Component {
+          constructor() {
+            super();
+
+            this.state = {
+                message: "We're getting learnt boys!"
+            };
+
+            this.updateMessage = this.updateMessage.bind(this);
+          }
+
+
+        updateMessage() {
+          this.setState(
+          {message : "We're done getting learnt boys!"}
+          );
+        }
+
+          render() {
+            return (
+            <div>
+              <h1>{this.state.message}!</h1>
+            <button onClick={this.updateMessage}>Grade 12</button>
+            </div>
+            );
+          }
+       }
+       
+        
+        ReactDOM.render(<Hello />, document.getElementById("root"));
+        </script>
+      </body>
+</html>
