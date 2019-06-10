@@ -55,9 +55,6 @@ class WeightSensorTracker:
                 wl.write(weight + '\n')
             self.weightCallback(weight)
     
-    
-        
-
 
 class EventProcessor:
     def __init__(self, tracker):
@@ -375,14 +372,17 @@ class WiiBoardThread:
     def __init__(self, interface):
         self.board = interface.board
         self.tracker = interface.tracker
-    
+        self.t = None
+
     def setCallback(self, func):
         self.tracker.setCallback(func)
     
     def start(self):
-        t = Thread(target=self.board.receive)
-        print "Definetely started a thread"
-        t.start()
+        if self.t is None:
+            self.t = Thread(target=self.board.receive)
+            self.t.setDaemon(True)
+            print "Definetely started a thread"
+            self.t.start()
 
 def main():
     processor = EventProcessor()
