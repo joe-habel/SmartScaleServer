@@ -3,6 +3,7 @@ import time
 import bluetooth
 import sys
 import subprocess
+import traceback
 
 from threading import Thread
 
@@ -324,8 +325,8 @@ class ServerInterface:
         try:
             address = self.board.discover()
             self.tracker.setAddress(address)
-        except:
-            pass
+        except Exception as e:
+            traceback.print_exc()                      
         else:
             self.disconnectCurrentDevices()
             self.connect()

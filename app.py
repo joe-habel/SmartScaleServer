@@ -24,7 +24,7 @@ class WiiBoardBluetoothSync:
         if self.callback is not None:
             print "We already had our callback"
             self.connection.setCallback(self.callback)
-            self.start()
+        self.start()
 
     def setCallback(self, func):
         print "Setting Callback"
@@ -58,7 +58,7 @@ def show_input():
 
 @app.route('/weight')
 def displayWeight():
-    return render_template('weight.html')
+    return render_template('react_weight.html')
 
 @socketio.on('connect')
 def initWeightUpdate():
@@ -67,7 +67,7 @@ def initWeightUpdate():
     def func(weight):
         emit('sigUpdateWeight', {'weight' : weight})
         socketio.sleep(0)
-    BluetoothConnection.setCallback(func)
+    BluetoothConnection.connection.setCallback(func)
     print "Callback emit initialized"
     
 

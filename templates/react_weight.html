@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> Wii Weight </title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+    
+    <script src="https://unpkg.com/react@15/dist/react.min.js"></script>
+    <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+        
+</head>
+<body>
+    
+     
+    <div id="root"></div>
+    <script type="text/babel">
+        
+        class Weight extends React.Component {
+          constructor() {
+            super();
+
+                this.socket = io.connect('http://' + document.domain + ':' + location.port);
+               
+                this.socket.on('connect', console.log("WebSocket Connected!"));
+                  
+                this.socket.on('sigWebSocketInit', function(msg) {
+                    this.updateConnection(msg.connection); });
+                
+                this.socket.on('sigUpdateWeight', function(msg) { 
+                    this.updateWeight(msg.weight); });
+            
+            this.state = {
+                connected: false,
+                last_weight: 0.0
+               };
+            
+            this.updateWeight = this.updateWeight.bind(this);
+            this.updateConnection = this.updateConnection.bind(this);
+          }
+        
+                  
+          updateConnection(connection) {
+            this.setState( {connected : connection});
+          }          
+        
+          updateWeight(new_weight) {
+            this.setState( {last_weight :  new_weight});
+          }
+        
+          render() { 
+            return (
+                    <div class="container text-center">
+                      <h1> WebSocket Connection </h1>
+                      <h3 id="web-socket-connection"> {this.state.connected} </h3>
+                      <h1> Current Weight </h1>
+                      <h3 id="current-weight"> {this.state.last_weight} lbs </h3>
+                      </div>)}
+        }
+    ReactDOM.render(<Weight />, document.getElementById("root"))
+    </script>
+    
+</body>
+    
+    
